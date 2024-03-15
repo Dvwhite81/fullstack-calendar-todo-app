@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 require("express-async-errors");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const config_1 = __importDefault(require("../utils/config"));
 const user_1 = __importDefault(require("../models/user"));
-const event_1 = __importDefault(require("../models/event"));
 const usersRouter = (0, express_1.Router)();
 const populateQuery = [
     { path: 'events', select: 'title' },
@@ -26,26 +27,42 @@ usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const users = yield user_1.default.find({}).populate(populateQuery);
     res.json(users);
 }));
+/*
 // Get User by ID
-usersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_1.default.findById(req.params.id);
-    if (user) {
-        res.json({
-            user,
-            events: user.events,
-            toDos: user.toDos,
-        });
-    }
-    else {
-        res.status(404).end();
-    }
+usersRouter.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    res.json({
+      user,
+      events: user.events,
+      toDos: user.toDos,
+    });
+  } else {
+    res.status(404).end();
+  }
+});
+*/
+// Get User by Token
+usersRouter.get('/:token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('usersRouter get params:', req.params);
+    const { token } = req.params;
+    console.log('token:', token);
+    const decoded = jsonwebtoken_1.default.verify(token, config_1.default.SECRET);
+    console.log('getByToken decoded:', decoded);
+    const user = decoded;
+    res.json({
+        success: true,
+        user: user,
+    });
 }));
 // Get User Events by Username
 usersRouter.get('/:username/events', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username } = req.params;
     const user = yield user_1.default.findOne({ username: username });
+    console.log('backend get user events user:', user);
     if (user) {
         res.json({
+            success: true,
             events: user.events,
         });
     }
@@ -69,14 +86,17 @@ usersRouter.get('/:username/toDos', (req, res) => __awaiter(void 0, void 0, void
 // Delete Event
 usersRouter.put('/:username/events/:eventId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, eventId } = req.params;
+    console.log('usersRouter put eventId:', eventId);
     const user = yield user_1.default.findOne({ username: username });
     if (user) {
         const { events } = user;
-        user.events = events.filter((event) => event._id.toString() !== eventId.toString());
+        console.log('usersRouter put events:', events);
+        const newEvents = events.filter((event) => event._id.toString() !== eventId.toString());
+        user.events = newEvents;
         yield user.save();
-        yield event_1.default.findByIdAndDelete(eventId);
         res.json({
-            events: user.events,
+            success: true,
+            events: newEvents,
         });
     }
     else {

@@ -46,10 +46,14 @@ eventsRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function*
         end,
         user: user.id,
     });
-    const savedEventModel = yield newEventModel.save();
-    user.events = user.events.concat(savedEventModel._id);
+    user.events = user.events.concat(newEventModel);
     yield user.save();
-    res.status(201).json(savedEventModel);
+    res.status(201).json({
+        newEventModel,
+        success: true,
+        message: 'Added event successfully',
+        events: user.events,
+    });
 }));
 // Not sure if I need this -
 // Right now events are deleted through usersRouter,

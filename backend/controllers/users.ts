@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import 'express-async-errors';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import config from '../utils/config';
 
 import User from '../models/user';
-import EventModel from '../models/event';
 
 const usersRouter = Router();
 
@@ -17,6 +18,7 @@ usersRouter.get('/', async (req, res) => {
   res.json(users);
 });
 
+/*
 // Get User by ID
 usersRouter.get('/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
@@ -30,14 +32,31 @@ usersRouter.get('/:id', async (req, res) => {
     res.status(404).end();
   }
 });
+*/
+// Get User by Token
+usersRouter.get('/:token', async (req, res) => {
+  console.log('usersRouter get params:', req.params);
+  const { token } = req.params;
+  console.log('token:', token);
+  const decoded = jwt.verify(token, config.SECRET as string) as JwtPayload;
+  console.log('getByToken decoded:', decoded);
+
+  const user = decoded;
+
+  res.json({
+    success: true,
+    user: user,
+  });
+});
 
 // Get User Events by Username
 usersRouter.get('/:username/events', async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({ username: username });
-
+  console.log('backend get user events user:', user);
   if (user) {
     res.json({
+      success: true,
       events: user.events,
     });
   } else {
@@ -62,20 +81,22 @@ usersRouter.get('/:username/toDos', async (req, res) => {
 // Delete Event
 usersRouter.put('/:username/events/:eventId', async (req, res) => {
   const { username, eventId } = req.params;
+  console.log('usersRouter put eventId:', eventId);
   const user = await User.findOne({ username: username });
 
   if (user) {
     const { events } = user;
-    user.events = events.filter(
+    console.log('usersRouter put events:', events);
+    const newEvents = events.filter(
       (event) => event._id.toString() !== eventId.toString()
     );
 
+    user.events = newEvents;
     await user.save();
 
-    await EventModel.findByIdAndDelete(eventId);
-
     res.json({
-      events: user.events,
+      success: true,
+      events: newEvents,
     });
   } else {
     res.status(404).end();

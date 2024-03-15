@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import EventModel from './event';
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -12,18 +13,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 4,
   },
-  events: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'EventModel',
-    },
-  ],
-  toDos: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'ToDoModel',
-    },
-  ],
+  events: [],
+  toDos: [],
 });
 
 userSchema.set('toJSON', {

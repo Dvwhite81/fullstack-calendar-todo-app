@@ -1,7 +1,5 @@
 import { Response, Router } from 'express';
 import EventModel from '../models/event';
-import User from '../models/user';
-import { EventType, UserType } from '../utils/interfaces';
 
 const eventsRouter = Router();
 
@@ -40,10 +38,14 @@ eventsRouter.post('/', async (req, res: Response) => {
     user: user.id,
   });
 
-  const savedEventModel = await newEventModel.save();
-  user.events = user.events.concat(savedEventModel._id);
+  user.events = user.events.concat(newEventModel);
   await user.save();
-  res.status(201).json(savedEventModel);
+  res.status(201).json({
+    newEventModel,
+    success: true,
+    message: 'Added event successfully',
+    events: user.events,
+  });
 });
 
 // Not sure if I need this -

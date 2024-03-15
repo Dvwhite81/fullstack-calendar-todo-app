@@ -37,12 +37,42 @@ const register = async (username: string, password: string) => {
   }
 };
 
-const getUserEvents = async (username: string) => {
-  const { data } = await axios.get(`${baseUrl}/users/${username}/events`);
+const getEventById = async (id: string) => {
+  const { data } = await axios.get(`${baseUrl}/events/${id}`);
+  console.log('getEventById data:', data);
+
+  if (data) {
+    const { success } = data;
+    console.log('getEventById success:', success);
+
+    if (success) {
+      const { event } = data;
+      return {
+        success: true,
+        event: event,
+      };
+    }
+  }
+};
+
+const getUserEvents = async (username: string, token: string) => {
+  const { data } = await axios.get(`${baseUrl}/users/${username}/events`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log('getUserEvents data:', data);
   if (data.success) {
+    const eventIds = data.events;
+    const userEvents = [];
+
+    for (const id of eventIds) {
+      const event = getEventById(id);
+      userEvents.push(event);
+    }
     return {
       success: true,
-      recipes: data.recipes,
+      events: userEvents,
     };
   } else {
     return {
@@ -52,11 +82,21 @@ const getUserEvents = async (username: string) => {
   }
 };
 
-const addUserEvent = async (username: string, newEvent: EventFormData) => {
-  const { data } = await axios.post(`${baseUrl}/users/${username}/events`, {
-    event: newEvent,
-  });
+const addUserEvent = async (token: string, newEvent: EventFormData) => {
+  const { data } = await axios.post(
+    `${baseUrl}/events`,
+    {
+      token,
+      event: newEvent,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
+  console.log('addUserEvent data:', data);
   if (data.success) {
     return {
       success: true,
@@ -72,15 +112,19 @@ const addUserEvent = async (username: string, newEvent: EventFormData) => {
   }
 };
 
-const deleteUserEvent = async (username: string, eventId: string) => {
+const deleteUserEvent = async (token: string, eventId: string) => {
+  const { user } = await getUserByToken(token);
+  console.log('deleteUserEvent eventId:', eventId);
+  const { username } = user;
+
   const { data } = await axios.put(
     `${baseUrl}/users/${username}/events/${eventId}`
   );
-
+  console.log('deleteUserEvent data:', data);
   if (data.success) {
     return {
       success: true,
-      message: data.message,
+      message: 'Deleted event',
       events: data.events,
     };
   }
@@ -92,7 +136,6 @@ const getUserByToken = async (token: string) => {
   if (data.success) {
     return {
       success: true,
-      message: data.message,
       user: data.user,
     };
   } else {

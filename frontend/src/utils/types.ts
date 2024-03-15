@@ -2,8 +2,8 @@ export interface UserType {
   _id: string;
   username: string;
   password: string;
-  createdAt: string;
-  updatedAt: string;
+  events: EventType[];
+  toDos: ToDoType[];
 }
 
 export interface AuthResult {
@@ -31,12 +31,16 @@ export interface ToDoType extends ToDoFormData {
 export interface EventFormData {
   description: string;
   allDay: boolean;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
 }
 
-export interface EventType extends EventFormData {
-  _id: string;
+export interface EventType {
+  id: string;
+  description: string;
+  allDay: boolean;
+  start: string;
+  end: string;
 }
 
 export interface EventStyleType {

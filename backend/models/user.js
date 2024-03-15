@@ -16,18 +16,8 @@ const userSchema = new mongoose_1.default.Schema({
         required: true,
         minLength: 4,
     },
-    events: [
-        {
-            type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: 'EventModel',
-        },
-    ],
-    toDos: [
-        {
-            type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: 'ToDoModel',
-        },
-    ],
+    events: [],
+    toDos: [],
 });
 userSchema.set('toJSON', {
     transform: (document, returnedUser) => {
