@@ -10,13 +10,21 @@ registerRouter.post('/', async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const user = new User({
-    username,
-    passwordHash,
-  });
-  console.log('register user:', user);
-  const savedUser = await user.save();
-  res.status(201).json(savedUser);
+  try {
+    const user = new User({
+      username,
+      passwordHash,
+    });
+    console.log('register user:', user);
+    const savedUser = await user.save();
+    res.status(201).json({
+      success: true,
+      message: 'Registered successfully',
+      user: savedUser,
+    });
+  } catch (error) {
+    console.log('error:', error);
+  }
 });
 
 export default registerRouter;

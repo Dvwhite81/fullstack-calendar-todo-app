@@ -15,12 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const event_1 = __importDefault(require("../models/event"));
 const eventsRouter = (0, express_1.Router)();
+// Get All Events
 eventsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('GET');
     const events = yield event_1.default.find({}).populate('user', { username: 1 });
     console.log('events:', events);
     res.json(events);
 }));
+// Get Event by ID
 eventsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const event = yield event_1.default.findById(req.params.id);
     if (event)
@@ -28,6 +30,7 @@ eventsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
     else
         res.status(404).end();
 }));
+// Add Event
 eventsRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('POST');
     const { body, user } = req;
@@ -48,6 +51,9 @@ eventsRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function*
     yield user.save();
     res.status(201).json(savedEventModel);
 }));
+// Not sure if I need this -
+// Right now events are deleted through usersRouter,
+// but might want to verify token
 eventsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { id } = req.params;
@@ -66,6 +72,7 @@ eventsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(204).end();
     }
 }));
+// Edit Event
 eventsRouter.put('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { description, allDay, start, end } = req.body;

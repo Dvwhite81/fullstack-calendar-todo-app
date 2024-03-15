@@ -20,12 +20,21 @@ const registerRouter = (0, express_1.Router)();
 registerRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     const passwordHash = yield bcryptjs_1.default.hash(password, 10);
-    const user = new user_1.default({
-        username,
-        passwordHash,
-    });
-    console.log('register user:', user);
-    const savedUser = yield user.save();
-    res.status(201).json(savedUser);
+    try {
+        const user = new user_1.default({
+            username,
+            passwordHash,
+        });
+        console.log('register user:', user);
+        const savedUser = yield user.save();
+        res.status(201).json({
+            success: true,
+            message: 'Registered successfully',
+            user: savedUser,
+        });
+    }
+    catch (error) {
+        console.log('error:', error);
+    }
 }));
 exports.default = registerRouter;

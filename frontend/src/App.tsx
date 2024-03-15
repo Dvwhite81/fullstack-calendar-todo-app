@@ -1,35 +1,132 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { SyntheticEvent, useState } from 'react';
+import './App.css';
+import { AuthResult, UserType } from './utils/types';
+import userService from './services/userService';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loggedInUser, setLoggedInUser] = useState<UserType | null>(null);
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [confirmation, setConfirmation] = useState('');
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [registered, setRegistered] = useState(false);
+
+  const handleRegister = async () => {
+    if (registerUsername === '' || registerPassword === '') {
+      return;
+    }
+
+    if (registerPassword !== confirmation) {
+      return;
+    }
+
+    const result: AuthResult | undefined = await userService.register(
+      registerUsername,
+      registerPassword
+    );
+
+    if (result) {
+      const { success } = result;
+      console.log('register result:', result);
+      if (success) {
+        console.log('register success:', success);
+        const { user, token } = result;
+        console.log('register USER:', user);
+
+        setConfirmation('');
+        setRegistered(true);
+        handleLogin(registerUsername, registerPassword);
+        setRegisterUsername('');
+        setRegisterPassword('');
+      }
+    }
+  };
+
+  const handleRegisterSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    handleRegister();
+  };
+
+  const handleLogin = async (username: string, password: string) => {
+    if (username === '' || password === '') {
+      return;
+    }
+
+    const result: AuthResult | undefined = await userService.login(
+      username,
+      password
+    );
+
+    if (result) {
+      const { success, message } = result;
+      console.log('login result:', result);
+      if (success) {
+        const { user, token } = result;
+        console.log('login USER:', user);
+        if (user && token) {
+          setLoggedInUser(user);
+          localStorage.setItem('user', user._id);
+        }
+
+        setLoginUsername('');
+        setLoginPassword('');
+      }
+    }
+  };
+
+  const handleLogInSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    handleLogin(loginUsername, loginPassword);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div id="main-container">
+      {loggedInUser && <h2>{loggedInUser.username}</h2>}
+      {registered && !loggedInUser && (
+        <form onSubmit={handleLogInSubmit}>
+          <h2>Log In</h2>
+          <label>Username</label>
+          <input
+            type="text"
+            value={loginUsername}
+            onChange={({ target }) => setLoginUsername(target.value)}
+          />
+          <label>Password</label>
+          <input
+            type="password"
+            value={loginPassword}
+            onChange={({ target }) => setLoginPassword(target.value)}
+          />
+          <button type="submit">Log In</button>
+        </form>
+      )}
+      {!registered && (
+        <form onSubmit={handleRegisterSubmit}>
+          <h2>Register</h2>
+          <label>Username</label>
+          <input
+            type="text"
+            value={registerUsername}
+            onChange={({ target }) => setRegisterUsername(target.value)}
+          />
+          <label>Password</label>
+          <input
+            type="password"
+            value={registerPassword}
+            onChange={({ target }) => setRegisterPassword(target.value)}
+          />
+          <label>Confirm</label>
+          <input
+            type="password"
+            value={confirmation}
+            onChange={({ target }) => setConfirmation(target.value)}
+          />
+          <button type="submit">Register</button>
+        </form>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;

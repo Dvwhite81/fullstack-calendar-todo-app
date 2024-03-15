@@ -21,10 +21,12 @@ const populateQuery = [
     { path: 'events', select: 'title' },
     { path: 'toDos', select: 'description' },
 ];
+// Get All Users
 usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const users = yield user_1.default.find({}).populate(populateQuery);
     res.json(users);
 }));
+// Get User by ID
 usersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_1.default.findById(req.params.id);
     if (user) {
@@ -38,6 +40,7 @@ usersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(404).end();
     }
 }));
+// Get User Events by Username
 usersRouter.get('/:username/events', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username } = req.params;
     const user = yield user_1.default.findOne({ username: username });
@@ -50,6 +53,7 @@ usersRouter.get('/:username/events', (req, res) => __awaiter(void 0, void 0, voi
         res.status(404).end();
     }
 }));
+// Get User ToDos by Username
 usersRouter.get('/:username/toDos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username } = req.params;
     const user = yield user_1.default.findOne({ username: username });
@@ -62,6 +66,7 @@ usersRouter.get('/:username/toDos', (req, res) => __awaiter(void 0, void 0, void
         res.status(404).end();
     }
 }));
+// Delete Event
 usersRouter.put('/:username/events/:eventId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, eventId } = req.params;
     const user = yield user_1.default.findOne({ username: username });
@@ -78,6 +83,7 @@ usersRouter.put('/:username/events/:eventId', (req, res) => __awaiter(void 0, vo
         res.status(404).end();
     }
 }));
+// Delete User
 usersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield user_1.default.findByIdAndDelete(req.params.id);
     res.status(204).end();

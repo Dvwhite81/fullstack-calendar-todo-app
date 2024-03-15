@@ -30,7 +30,9 @@ loginRouter.post('/', async (req, res) => {
 
   res.status(200).send({
     token,
-    username: user.username,
+    success: true,
+    message: 'Logged in successfully',
+    user: user,
     events: user.events,
     toDos: user.toDos,
   });

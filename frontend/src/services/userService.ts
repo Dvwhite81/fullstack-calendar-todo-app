@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { EventFormData } from '../utils/types';
 
 const baseUrl = 'http://localhost:7000/api';
 
 const login = async (username: string, password: string) => {
   const user = { username, password };
   const { data } = await axios.post(`${baseUrl}/login`, user);
+  console.log('userService login data:', data);
   if (data.success) {
     return {
       success: true,
@@ -24,7 +26,7 @@ const register = async (username: string, password: string) => {
   const user = { username, password };
 
   const { data } = await axios.post(`${baseUrl}/register`, user);
-
+  console.log('userService register data:', data);
   if (data.success) {
     return login(username, password);
   } else {
@@ -50,17 +52,17 @@ const getUserEvents = async (username: string) => {
   }
 };
 
-const addUserRecipe = async (username: string, recipe: Recipe) => {
-  const { data } = await axios.post(`${baseUrl}/users/${username}/recipes`, {
-    recipe: recipe,
+const addUserEvent = async (username: string, newEvent: EventFormData) => {
+  const { data } = await axios.post(`${baseUrl}/users/${username}/events`, {
+    event: newEvent,
   });
 
   if (data.success) {
     return {
       success: true,
       message: data.message,
-      newRecipe: recipe,
-      recipes: data.recipes,
+      newEvent: newEvent,
+      events: data.events,
     };
   } else {
     return {
@@ -70,17 +72,16 @@ const addUserRecipe = async (username: string, recipe: Recipe) => {
   }
 };
 
-const deleteUserRecipe = async (username: string, recipe: Recipe) => {
+const deleteUserEvent = async (username: string, eventId: string) => {
   const { data } = await axios.put(
-    `${baseUrl}/users/${username}/recipes`,
-    recipe
+    `${baseUrl}/users/${username}/events/${eventId}`
   );
 
   if (data.success) {
     return {
       success: true,
       message: data.message,
-      recipes: data.recipes,
+      events: data.events,
     };
   }
 };
@@ -103,10 +104,10 @@ const getUserByToken = async (token: string) => {
 };
 
 export default {
-  addUserRecipe,
-  deleteUserRecipe,
+  addUserEvent,
+  deleteUserEvent,
   getUserByToken,
-  getUserRecipes,
+  getUserEvents,
   login,
   register,
 };
