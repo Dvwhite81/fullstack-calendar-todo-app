@@ -1,1 +1,1 @@
-# ts-mern-template
+# fullstack-calendar-todo-app

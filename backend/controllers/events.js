@@ -63,8 +63,6 @@ eventsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     }
     else {
         yield event_1.default.findByIdAndDelete(id);
-        user.events = user.events.filter((event) => event !== eventToDelete);
-        yield user.save();
         res.status(204).end();
     }
 }));

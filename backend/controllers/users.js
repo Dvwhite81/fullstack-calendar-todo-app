@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 require("express-async-errors");
 const user_1 = __importDefault(require("../models/user"));
+const event_1 = __importDefault(require("../models/event"));
 const usersRouter = (0, express_1.Router)();
 const populateQuery = [
     { path: 'events', select: 'title' },
@@ -31,6 +32,46 @@ usersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function
             user,
             events: user.events,
             toDos: user.toDos,
+        });
+    }
+    else {
+        res.status(404).end();
+    }
+}));
+usersRouter.get('/:username/events', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username } = req.params;
+    const user = yield user_1.default.findOne({ username: username });
+    if (user) {
+        res.json({
+            events: user.events,
+        });
+    }
+    else {
+        res.status(404).end();
+    }
+}));
+usersRouter.get('/:username/toDos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username } = req.params;
+    const user = yield user_1.default.findOne({ username: username });
+    if (user) {
+        res.json({
+            toDos: user.toDos,
+        });
+    }
+    else {
+        res.status(404).end();
+    }
+}));
+usersRouter.put('/:username/events/:eventId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username, eventId } = req.params;
+    const user = yield user_1.default.findOne({ username: username });
+    if (user) {
+        const { events } = user;
+        user.events = events.filter((event) => event._id.toString() !== eventId.toString());
+        yield user.save();
+        yield event_1.default.findByIdAndDelete(eventId);
+        res.json({
+            events: user.events,
         });
     }
     else {
