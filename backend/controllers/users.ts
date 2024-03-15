@@ -11,11 +11,13 @@ const populateQuery = [
   { path: 'toDos', select: 'description' },
 ];
 
+// Get All Users
 usersRouter.get('/', async (req, res) => {
   const users = await User.find({}).populate(populateQuery);
   res.json(users);
 });
 
+// Get User by ID
 usersRouter.get('/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
@@ -29,6 +31,7 @@ usersRouter.get('/:id', async (req, res) => {
   }
 });
 
+// Get User Events by Username
 usersRouter.get('/:username/events', async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({ username: username });
@@ -42,6 +45,7 @@ usersRouter.get('/:username/events', async (req, res) => {
   }
 });
 
+// Get User ToDos by Username
 usersRouter.get('/:username/toDos', async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({ username: username });
@@ -55,6 +59,7 @@ usersRouter.get('/:username/toDos', async (req, res) => {
   }
 });
 
+// Delete Event
 usersRouter.put('/:username/events/:eventId', async (req, res) => {
   const { username, eventId } = req.params;
   const user = await User.findOne({ username: username });
@@ -77,6 +82,7 @@ usersRouter.put('/:username/events/:eventId', async (req, res) => {
   }
 });
 
+// Delete User
 usersRouter.delete('/:id', async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.status(204).end();

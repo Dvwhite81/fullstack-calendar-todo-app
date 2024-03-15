@@ -5,6 +5,7 @@ import { EventType, UserType } from '../utils/interfaces';
 
 const eventsRouter = Router();
 
+// Get All Events
 eventsRouter.get('/', async (req, res: Response) => {
   console.log('GET');
   const events = await EventModel.find({}).populate('user', { username: 1 });
@@ -12,12 +13,14 @@ eventsRouter.get('/', async (req, res: Response) => {
   res.json(events);
 });
 
+// Get Event by ID
 eventsRouter.get('/:id', async (req, res: Response) => {
   const event = await EventModel.findById(req.params.id);
   if (event) res.json(event);
   else res.status(404).end();
 });
 
+// Add Event
 eventsRouter.post('/', async (req, res: Response) => {
   console.log('POST');
   const { body, user } = req;
@@ -43,6 +46,9 @@ eventsRouter.post('/', async (req, res: Response) => {
   res.status(201).json(savedEventModel);
 });
 
+// Not sure if I need this -
+// Right now events are deleted through usersRouter,
+// but might want to verify token
 eventsRouter.delete('/:id', async (req, res: Response) => {
   const { id } = req.params;
   const { user } = req;
@@ -63,6 +69,7 @@ eventsRouter.delete('/:id', async (req, res: Response) => {
   }
 });
 
+// Edit Event
 eventsRouter.put('/:id', async (req, res: Response) => {
   const { id } = req.params;
   const { description, allDay, start, end } = req.body;
