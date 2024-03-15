@@ -1,5 +1,6 @@
 import { Response, Router } from 'express';
 import EventModel from '../models/event';
+import { EventType } from '../utils/interfaces';
 
 const eventsRouter = Router();
 
@@ -57,6 +58,12 @@ eventsRouter.delete('/:id', async (req, res: Response) => {
     res.status(401).end();
   } else {
     await EventModel.findByIdAndDelete(id);
+
+    user.events = user.events.filter(
+      (event: EventType) => event !== eventToDelete
+    );
+    await user.save();
+
     res.status(204).end();
   }
 });
