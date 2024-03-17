@@ -21,19 +21,22 @@ const RegisterPage = ({ handleRegister }: RegisterPageProps) => {
 
   const fields = [
     {
+      name: 'register-username-input',
       label: 'Username',
       inputType: 'text',
       value: username,
       setValue: setUsername,
     },
     {
+      name: 'register-password-input',
       label: 'Password',
       inputType: 'password',
       value: password,
       setValue: setPassword,
     },
     {
-      label: 'Confirm Password',
+      name: 'register-confirmation-input',
+      label: 'Confirm',
       inputType: 'password',
       value: confirmation,
       setValue: setConfirmation,

@@ -1,35 +1,34 @@
 import { SyntheticEvent } from 'react';
-import { AuthField } from '../utils/types';
+import { InputField } from '../utils/types';
 import { Link } from 'react-router-dom';
+import FormInput from './FormInput';
 
 interface AuthFormProps {
   formType: string;
-  fields: AuthField[];
+  fields: InputField[];
   handleSubmit: (e: SyntheticEvent) => void;
 }
 
 const AuthForm = ({ formType, fields, handleSubmit }: AuthFormProps) => {
   const btnText = formType === 'login' ? 'Log In' : 'Sign Up';
-  const linkText =
+
+  const pText =
     formType === 'login'
       ? "Don't have an account?"
       : 'Already have an account?';
+
   const linkPath = formType === 'login' ? '/register' : '/login';
+
+  const linkText = formType === 'login' ? 'Sign Up' : 'Log In';
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="form auth-form" onSubmit={handleSubmit}>
       {fields.map((field, index) => (
-        <div key={index}>
-          <label>{field.label}</label>
-          <input
-            type={field.inputType}
-            value={field.value}
-            onChange={({ target }) => field.setValue(target.value)}
-          />
-        </div>
+        <FormInput key={index} field={field} />
       ))}
       <button type="submit">{btnText}</button>
       <p>
-        {linkText} <Link to={linkPath}>{btnText}</Link>
+        {pText} <Link to={linkPath}>{linkText}</Link>
       </p>
     </form>
   );

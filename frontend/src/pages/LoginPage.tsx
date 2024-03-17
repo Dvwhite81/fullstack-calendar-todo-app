@@ -16,12 +16,14 @@ const LoginPage = ({ handleLogin }: LoginPageProps) => {
 
   const fields = [
     {
+      name: 'login-username-input',
       label: 'Username',
       inputType: 'text',
       value: username,
       setValue: setUsername,
     },
     {
+      name: 'login-password-input',
       label: 'Password',
       inputType: 'password',
       value: password,

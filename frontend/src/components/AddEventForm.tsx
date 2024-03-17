@@ -1,5 +1,7 @@
 import { SyntheticEvent, useState } from 'react';
 import moment from 'moment';
+import FormInput from './FormInput';
+import FormCheckbox from './FormCheckbox';
 
 interface AddEventFormProps {
   addEvent: (
@@ -24,30 +26,41 @@ const AddEventForm = ({ addEvent }: AddEventFormProps) => {
     }
   };
   return (
-    <form onSubmit={handleAddEvent}>
-      <label>Description</label>
-      <input
-        type="text"
-        value={description}
-        onChange={({ target }) => setDescription(target.value)}
+    <form className="form event-form" onSubmit={handleAddEvent}>
+      <FormInput
+        field={{
+          name: 'event-description-input',
+          label: 'Description',
+          inputType: 'text',
+          value: description,
+          setValue: setDescription,
+        }}
       />
-      <label>All Day?</label>
-      <input
-        type="checkbox"
-        checked={allDay === true}
-        onChange={() => setAllDay((prev) => !prev)}
+      <FormCheckbox
+        field={{
+          name: 'event-allDay-input',
+          label: 'All Day?',
+          value: allDay,
+          setValue: setAllDay,
+        }}
       />
-      <label>Start</label>
-      <input
-        type="date"
-        value={start}
-        onChange={({ target }) => setStart(target.value)}
+      <FormInput
+        field={{
+          name: 'event-start-input',
+          label: 'Start',
+          inputType: 'date',
+          value: start,
+          setValue: setStart,
+        }}
       />
-      <label>End</label>
-      <input
-        type="date"
-        value={end}
-        onChange={({ target }) => setEnd(target.value)}
+      <FormInput
+        field={{
+          name: 'event-end-input',
+          label: 'End',
+          inputType: 'date',
+          value: end,
+          setValue: setEnd,
+        }}
       />
       <button type="submit">Add Event</button>
     </form>

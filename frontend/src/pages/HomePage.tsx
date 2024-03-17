@@ -1,7 +1,8 @@
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { EventType, UserType } from '../utils/types';
 import AddEventForm from '../components/AddEventForm';
+import { useNavigate } from 'react-router-dom';
 
 interface HomePageProps {
   loggedInUser: UserType | null;
@@ -24,6 +25,15 @@ const HomePage = ({
   handleLogOut,
 }: HomePageProps) => {
   const [showEvents, setShowEvents] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('useEffect loggedInUser:', loggedInUser);
+
+    if (!loggedInUser) {
+      navigate('/login');
+    }
+  });
 
   return (
     <div className="page home-page">

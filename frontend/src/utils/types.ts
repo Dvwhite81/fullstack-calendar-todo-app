@@ -6,11 +6,19 @@ export interface UserType {
   toDos: ToDoType[];
 }
 
-export interface AuthField {
+export interface InputField {
+  name: string;
   label: string;
   inputType: string;
   value: string;
   setValue: (value: string) => void;
+}
+
+export interface CheckboxField {
+  name: string;
+  label: string;
+  value: boolean;
+  setValue: (value: boolean) => void;
 }
 
 export interface AuthResult {
