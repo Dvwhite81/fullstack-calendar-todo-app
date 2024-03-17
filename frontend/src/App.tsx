@@ -1,27 +1,21 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
-import moment from 'moment';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import moment from 'moment';
 
 import { AuthResult, EventType, UserType } from './utils/types';
 import userService from './services/userService';
+
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import HomePage from './pages/HomePage';
 import './App.css';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<UserType | null>(null);
-  const [registerUsername, setRegisterUsername] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [confirmation, setConfirmation] = useState('');
-  const [loginUsername, setLoginUsername] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [registered, setRegistered] = useState(false);
-
-  const [description, setDescription] = useState('');
-  const [allDay, setAllDay] = useState(false);
-  const [start, setStart] = useState(moment().format('yyyy-MM-DD'));
-  const [end, setEnd] = useState(moment().format('yyyy-MM-DD'));
-
-  const [showEvents, setShowEvents] = useState(false);
   const [userEvents, setUserEvents] = useState<EventType[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkedLoggedIn = async () => {
@@ -40,7 +34,7 @@ function App() {
 
             setLoggedInUser(user);
             setUserEvents(user.events);
-            setRegistered(true);
+            navigate('/');
           } else {
             localStorage.removeItem('token');
           }
@@ -49,59 +43,36 @@ function App() {
     };
 
     checkedLoggedIn();
-  }, [setLoggedInUser]);
+  }, [navigate]);
 
-  const handleShowEvents = () => {
-    setShowEvents(true);
-    console.log('userEvents:', userEvents);
-  };
-
-  const handleLogOut = () => {
-    localStorage.removeItem('token');
-  };
-
-  const handleRegister = async () => {
-    if (
-      registerUsername === '' ||
-      registerPassword === '' ||
-      confirmation === ''
-    ) {
+  const handleRegister = async (
+    username: string,
+    password: string,
+    confirmation: string
+  ) => {
+    if (username === '' || password === '' || confirmation === '') {
       toast.error('All fields are required');
       return;
     }
 
-    if (registerPassword !== confirmation) {
+    if (password !== confirmation) {
       toast.error('Passwords must match');
       return;
     }
 
     const result: AuthResult | undefined = await userService.register(
-      registerUsername,
-      registerPassword
+      username,
+      password
     );
 
     if (result) {
       const { success, message } = result;
-      console.log('register result:', result);
       if (success) {
-        console.log('register success:', success);
-        const { user } = result;
-        console.log('register USER:', user);
-
-        setConfirmation('');
-        setRegistered(true);
-        handleLogin(registerUsername, registerPassword);
-        setRegisterUsername('');
-        setRegisterPassword('');
+        handleLogin(username, password);
       } else {
         toast.error(message);
       }
     }
-  };
-
-  const handleRegisterSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    handleRegister();
   };
 
   const handleLogin = async (username: string, password: string) => {
@@ -115,36 +86,33 @@ function App() {
       password
     );
 
+    console.log('handleLogin result:', result);
+
     if (result) {
       const { success, message } = result;
-      console.log('login result:', result);
       if (success) {
         const { user, token } = result;
         console.log('login USER:', user);
         if (user && token) {
           setLoggedInUser(user);
           localStorage.setItem('token', token);
-
           setUserEvents(user.events);
+          navigate('/');
         }
 
         toast.success(message);
-        setLoginUsername('');
-        setLoginPassword('');
       } else {
         toast.error(message);
       }
     }
   };
 
-  const handleLogInSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    handleLogin(loginUsername, loginPassword);
-  };
-
-  const addEvent = async (e: SyntheticEvent) => {
-    e.preventDefault();
-
+  const addEvent = async (
+    description: string,
+    allDay: boolean,
+    start: string,
+    end: string
+  ) => {
     const token = localStorage.getItem('token');
 
     if (!loggedInUser || !token) return;
@@ -163,10 +131,6 @@ function App() {
 
       if (success) {
         toast.success(message);
-        setDescription('');
-        setAllDay(false);
-        setStart(moment().format('yyyy-MM-DD'));
-        setEnd(moment().format('yyyy-MM-DD'));
         setUserEvents(result.events);
       } else {
         toast.error(message);
@@ -195,113 +159,39 @@ function App() {
     }
   };
 
+  const handleLogOut = (e: SyntheticEvent) => {
+    e.preventDefault();
+    console.log('handleLogout e:', e);
+    localStorage.removeItem('token');
+    setLoggedInUser(null);
+    navigate('/login');
+    toast.success('Logged out');
+  };
+
   return (
     <div id="main-container">
-      {loggedInUser && (
-        <div>
-          <h2>Logged In User: {loggedInUser.username}</h2>
-          <button type="button" onClick={handleLogOut}>
-            Log Out
-          </button>
-
-          {!showEvents && (
-            <button type="button" onClick={handleShowEvents}>
-              Show Events
-            </button>
-          )}
-
-          {showEvents && (
-            <div>
-              <button type="button" onClick={() => setShowEvents(false)}>
-                Hide Events
-              </button>
-              <ul>
-                {userEvents.map((event) => (
-                  <li key={event._id}>
-                    <p>{event.description}</p>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteEvent(event._id)}
-                    >
-                      x
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <form onSubmit={addEvent}>
-            <label>Description</label>
-            <input
-              type="text"
-              value={description}
-              onChange={({ target }) => setDescription(target.value)}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              loggedInUser={loggedInUser}
+              userEvents={userEvents}
+              addEvent={addEvent}
+              handleDeleteEvent={handleDeleteEvent}
+              handleLogOut={handleLogOut}
             />
-            <label>All Day?</label>
-            <input
-              type="checkbox"
-              checked={allDay === true}
-              onChange={() => setAllDay((prev) => !prev)}
-            />
-            <label>Start</label>
-            <input
-              type="date"
-              value={start}
-              onChange={({ target }) => setStart(target.value)}
-            />
-            <label>End</label>
-            <input
-              type="date"
-              value={end}
-              onChange={({ target }) => setEnd(target.value)}
-            />
-            <button type="submit">Add Event</button>
-          </form>
-        </div>
-      )}
-      {registered && !loggedInUser && (
-        <form onSubmit={handleLogInSubmit}>
-          <h2>Log In</h2>
-          <label>Username</label>
-          <input
-            type="text"
-            value={loginUsername}
-            onChange={({ target }) => setLoginUsername(target.value)}
-          />
-          <label>Password</label>
-          <input
-            type="password"
-            value={loginPassword}
-            onChange={({ target }) => setLoginPassword(target.value)}
-          />
-          <button type="submit">Log In</button>
-        </form>
-      )}
-      {!registered && !loggedInUser && (
-        <form onSubmit={handleRegisterSubmit}>
-          <h2>Register</h2>
-          <label>Username</label>
-          <input
-            type="text"
-            value={registerUsername}
-            onChange={({ target }) => setRegisterUsername(target.value)}
-          />
-          <label>Password</label>
-          <input
-            type="password"
-            value={registerPassword}
-            onChange={({ target }) => setRegisterPassword(target.value)}
-          />
-          <label>Confirm</label>
-          <input
-            type="password"
-            value={confirmation}
-            onChange={({ target }) => setConfirmation(target.value)}
-          />
-          <button type="submit">Register</button>
-        </form>
-      )}
+          }
+        />
+        <Route
+          path="/register"
+          element={<RegisterPage handleRegister={handleRegister} />}
+        />
+        <Route
+          path="/login"
+          element={<LoginPage handleLogin={handleLogin} />}
+        />
+      </Routes>
       <ToastContainer theme="colored" newestOnTop />
     </div>
   );

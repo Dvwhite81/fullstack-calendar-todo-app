@@ -5,7 +5,11 @@ const baseUrl = 'http://localhost:7000/api';
 
 const login = async (username: string, password: string) => {
   const user = { username, password };
-  const { data } = await axios.post(`${baseUrl}/login`, user);
+  console.log('userService login user:', user);
+  const response = await axios.post(`${baseUrl}/login`, user);
+
+  console.log('userService login response:', response);
+  const { data } = response;
   console.log('userService login data:', data);
   if (data.success) {
     return {

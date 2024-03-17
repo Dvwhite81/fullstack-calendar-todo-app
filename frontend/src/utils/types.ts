@@ -6,6 +6,13 @@ export interface UserType {
   toDos: ToDoType[];
 }
 
+export interface AuthField {
+  label: string;
+  inputType: string;
+  value: string;
+  setValue: (value: string) => void;
+}
+
 export interface AuthResult {
   success: boolean;
   message: string;

@@ -21,14 +21,19 @@ const loginRouter = (0, express_1.Router)();
 loginRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     const user = yield user_1.default.findOne({ username });
+    console.log('loginRouter user:', user);
     const correctPassword = user === null
         ? false
         : yield bcrypt_1.default.compare(password, user.passwordHash);
-    if (!(user && correctPassword)) {
-        return res.status(401).json({
-            error: 'invalid username or password',
+    if (!user || !correctPassword) {
+        console.log('loginRouter returning error');
+        return res.send({
+            status: 401,
+            success: false,
+            message: 'Invalid username or password',
         });
     }
+    console.log('loginRouter after error');
     const userForToken = {
         username: user.username,
         id: user._id,

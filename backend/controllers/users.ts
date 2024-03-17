@@ -18,21 +18,6 @@ usersRouter.get('/', async (req, res) => {
   res.json(users);
 });
 
-/*
-// Get User by ID
-usersRouter.get('/:id', async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (user) {
-    res.json({
-      user,
-      events: user.events,
-      toDos: user.toDos,
-    });
-  } else {
-    res.status(404).end();
-  }
-});
-*/
 // Get User by Token
 usersRouter.get('/:token', async (req, res) => {
   console.log('usersRouter get params:', req.params);

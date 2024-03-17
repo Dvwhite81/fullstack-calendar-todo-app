@@ -27,21 +27,6 @@ usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const users = yield user_1.default.find({}).populate(populateQuery);
     res.json(users);
 }));
-/*
-// Get User by ID
-usersRouter.get('/:id', async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (user) {
-    res.json({
-      user,
-      events: user.events,
-      toDos: user.toDos,
-    });
-  } else {
-    res.status(404).end();
-  }
-});
-*/
 // Get User by Token
 usersRouter.get('/:token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('usersRouter get params:', req.params);
@@ -92,12 +77,7 @@ usersRouter.put('/:username/events/:eventId', (req, res) => __awaiter(void 0, vo
     const user = yield user_1.default.findOne({ username: username });
     if (user) {
         const { events } = user;
-        console.log('usersRouter put events:', events);
-        const newEvents = events.filter((event) => {
-            console.log('backend put event:', event);
-            console.log('backend put event._id.toString():', event._id.toString());
-            return event._id.toString() !== eventId;
-        });
+        const newEvents = events.filter((event) => event._id.toString() !== eventId);
         user.events = newEvents;
         yield user.save();
         res.json({
