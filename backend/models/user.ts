@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import EventModel from './event';
+import ToDoModel from './toDo';
 
 const userSchema = new mongoose.Schema({
   username: {

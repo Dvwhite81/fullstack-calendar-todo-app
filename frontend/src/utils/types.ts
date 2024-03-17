@@ -36,7 +36,7 @@ export interface EventFormData {
 }
 
 export interface EventType {
-  id: string;
+  _id: string;
   description: string;
   allDay: boolean;
   start: string;

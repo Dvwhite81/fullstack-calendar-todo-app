@@ -42,10 +42,13 @@ usersRouter.get('/:token', async (req, res) => {
   console.log('getByToken decoded:', decoded);
 
   const user = decoded;
+  const { id } = user;
+
+  const dbUser = await User.findById(id);
 
   res.json({
     success: true,
-    user: user,
+    user: dbUser,
   });
 });
 
@@ -86,9 +89,8 @@ usersRouter.put('/:username/events/:eventId', async (req, res) => {
 
   if (user) {
     const { events } = user;
-    console.log('usersRouter put events:', events);
     const newEvents = events.filter(
-      (event) => event._id.toString() !== eventId.toString()
+      (event) => event._id.toString() !== eventId
     );
 
     user.events = newEvents;

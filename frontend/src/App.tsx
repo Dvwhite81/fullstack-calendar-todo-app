@@ -1,8 +1,10 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
 import moment from 'moment';
-import './App.css';
+import { ToastContainer, toast } from 'react-toastify';
+
 import { AuthResult, EventType, UserType } from './utils/types';
 import userService from './services/userService';
+import './App.css';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<UserType | null>(null);
@@ -12,7 +14,6 @@ function App() {
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [registered, setRegistered] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
   const [description, setDescription] = useState('');
   const [allDay, setAllDay] = useState(false);
@@ -28,32 +29,31 @@ function App() {
 
       if (token) {
         const result = await userService.getUserByToken(token);
-
+        console.log('checkLogged result:', result);
         if (result) {
-          const { success } = result;
+          const { success, user } = result;
+          console.log('checkLogged success:', success);
 
-          if (success) {
+          if (success && user) {
             const { user } = result;
+            console.log('checkLogged user:', user);
+
             setLoggedInUser(user);
+            setUserEvents(user.events);
             setRegistered(true);
+          } else {
+            localStorage.removeItem('token');
           }
         }
       }
     };
 
     checkedLoggedIn();
-  }, []);
+  }, [setLoggedInUser]);
 
   const handleShowEvents = () => {
     setShowEvents(true);
     console.log('userEvents:', userEvents);
-  };
-
-  const showMessage = (text: string) => {
-    setMessage(text);
-    setTimeout(() => {
-      setMessage(null);
-    }, 2000);
   };
 
   const handleLogOut = () => {
@@ -61,11 +61,17 @@ function App() {
   };
 
   const handleRegister = async () => {
-    if (registerUsername === '' || registerPassword === '') {
+    if (
+      registerUsername === '' ||
+      registerPassword === '' ||
+      confirmation === ''
+    ) {
+      toast.error('All fields are required');
       return;
     }
 
     if (registerPassword !== confirmation) {
+      toast.error('Passwords must match');
       return;
     }
 
@@ -75,7 +81,7 @@ function App() {
     );
 
     if (result) {
-      const { success } = result;
+      const { success, message } = result;
       console.log('register result:', result);
       if (success) {
         console.log('register success:', success);
@@ -87,6 +93,8 @@ function App() {
         handleLogin(registerUsername, registerPassword);
         setRegisterUsername('');
         setRegisterPassword('');
+      } else {
+        toast.error(message);
       }
     }
   };
@@ -98,6 +106,7 @@ function App() {
 
   const handleLogin = async (username: string, password: string) => {
     if (username === '' || password === '') {
+      toast.error('All fields are required');
       return;
     }
 
@@ -119,9 +128,11 @@ function App() {
           setUserEvents(user.events);
         }
 
+        toast.success(message);
         setLoginUsername('');
         setLoginPassword('');
-        showMessage(message);
+      } else {
+        toast.error(message);
       }
     }
   };
@@ -151,12 +162,14 @@ function App() {
       const { success, message } = result;
 
       if (success) {
-        showMessage(message);
+        toast.success(message);
         setDescription('');
         setAllDay(false);
         setStart(moment().format('yyyy-MM-DD'));
         setEnd(moment().format('yyyy-MM-DD'));
         setUserEvents(result.events);
+      } else {
+        toast.error(message);
       }
     }
   };
@@ -171,18 +184,19 @@ function App() {
     const result = await userService.deleteUserEvent(token, eventId);
     console.log('handleDelete result:', result);
     if (result) {
-      const { success, events } = result;
+      const { success, events, message } = result;
 
       if (success) {
         setUserEvents(events);
-        showMessage('Deleted event');
+        toast.success(message);
+      } else {
+        toast.error(message);
       }
     }
   };
 
   return (
     <div id="main-container">
-      {message && <p>Message: {message}</p>}
       {loggedInUser && (
         <div>
           <h2>Logged In User: {loggedInUser.username}</h2>
@@ -203,11 +217,11 @@ function App() {
               </button>
               <ul>
                 {userEvents.map((event) => (
-                  <li key={event.id}>
+                  <li key={event._id}>
                     <p>{event.description}</p>
                     <button
                       type="button"
-                      onClick={() => handleDeleteEvent(event.id)}
+                      onClick={() => handleDeleteEvent(event._id)}
                     >
                       x
                     </button>
@@ -288,6 +302,7 @@ function App() {
           <button type="submit">Register</button>
         </form>
       )}
+      <ToastContainer theme="colored" newestOnTop />
     </div>
   );
 }

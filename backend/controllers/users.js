@@ -50,9 +50,11 @@ usersRouter.get('/:token', (req, res) => __awaiter(void 0, void 0, void 0, funct
     const decoded = jsonwebtoken_1.default.verify(token, config_1.default.SECRET);
     console.log('getByToken decoded:', decoded);
     const user = decoded;
+    const { id } = user;
+    const dbUser = yield user_1.default.findById(id);
     res.json({
         success: true,
-        user: user,
+        user: dbUser,
     });
 }));
 // Get User Events by Username
@@ -91,7 +93,11 @@ usersRouter.put('/:username/events/:eventId', (req, res) => __awaiter(void 0, vo
     if (user) {
         const { events } = user;
         console.log('usersRouter put events:', events);
-        const newEvents = events.filter((event) => event._id.toString() !== eventId.toString());
+        const newEvents = events.filter((event) => {
+            console.log('backend put event:', event);
+            console.log('backend put event._id.toString():', event._id.toString());
+            return event._id.toString() !== eventId;
+        });
         user.events = newEvents;
         yield user.save();
         res.json({
