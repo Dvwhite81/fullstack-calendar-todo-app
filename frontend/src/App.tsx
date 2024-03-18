@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import './App.css';
+import Calendar from './components/Calendar/Calendar';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<UserType | null>(null);
@@ -34,6 +35,7 @@ function App() {
 
             setLoggedInUser(user);
             setUserEvents(user.events);
+            console.log('App useEffect navigate');
             navigate('/');
           } else {
             localStorage.removeItem('token');
@@ -43,7 +45,8 @@ function App() {
     };
 
     checkedLoggedIn();
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRegister = async (
     username: string,
@@ -191,6 +194,7 @@ function App() {
           path="/login"
           element={<LoginPage handleLogin={handleLogin} />}
         />
+        <Route path="/calendar" element={<Calendar />} />
       </Routes>
       <ToastContainer theme="colored" newestOnTop />
     </div>

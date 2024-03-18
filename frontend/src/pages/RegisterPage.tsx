@@ -1,5 +1,5 @@
 import { SyntheticEvent, useState } from 'react';
-import AuthForm from '../components/AuthForm';
+import AuthForm from '../components/Forms/AuthForm';
 
 interface RegisterPageProps {
   handleRegister: (

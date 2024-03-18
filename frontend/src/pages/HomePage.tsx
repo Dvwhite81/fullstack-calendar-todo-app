@@ -1,8 +1,9 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { EventType, UserType } from '../utils/types';
-import AddEventForm from '../components/AddEventForm';
+import AddEventForm from '../components/Forms/AddEventForm';
 import { useNavigate } from 'react-router-dom';
+import Calendar from '../components/Calendar/Calendar';
 
 interface HomePageProps {
   loggedInUser: UserType | null;
@@ -17,14 +18,7 @@ interface HomePageProps {
   handleLogOut: (e: SyntheticEvent) => void;
 }
 
-const HomePage = ({
-  loggedInUser,
-  userEvents,
-  addEvent,
-  handleDeleteEvent,
-  handleLogOut,
-}: HomePageProps) => {
-  const [showEvents, setShowEvents] = useState(false);
+const HomePage = ({ loggedInUser, addEvent, handleLogOut }: HomePageProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,32 +36,7 @@ const HomePage = ({
         Log Out
       </button>
 
-      {!showEvents && (
-        <button type="button" onClick={() => setShowEvents(true)}>
-          Show Events
-        </button>
-      )}
-
-      {showEvents && (
-        <div>
-          <button type="button" onClick={() => setShowEvents(false)}>
-            Hide Events
-          </button>
-          <ul>
-            {userEvents.map((event) => (
-              <li key={event._id}>
-                <p>{event.description}</p>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteEvent(event._id)}
-                >
-                  x
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Calendar />
 
       <AddEventForm addEvent={addEvent} />
     </div>
