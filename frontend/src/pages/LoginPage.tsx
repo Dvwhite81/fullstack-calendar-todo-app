@@ -33,7 +33,6 @@ const LoginPage = ({ handleLogin }: LoginPageProps) => {
 
   return (
     <div className="page login-page">
-      <h2>Log In</h2>
       <AuthForm
         formType="login"
         fields={fields}

@@ -3,7 +3,15 @@ import { useState } from 'react';
 import { months, weekdays } from '../../utils/helpers';
 import CalendarDays from './CalendarDays';
 
-const Calendar = () => {
+interface CalendarProps {
+  addEvent: (
+    description: string,
+    allDay: boolean,
+    start: string,
+    end: string
+  ) => void;
+}
+const Calendar = ({ addEvent }: CalendarProps) => {
   const [currentDay, setCurrentDay] = useState(new Date().getDate());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -44,7 +52,7 @@ const Calendar = () => {
       <div className="calendar-body">
         <div className="table-header">
           {weekdays.map((day) => (
-            <div className="weekday">
+            <div key={day} className="weekday">
               <p className="weekday-text">{day}</p>
             </div>
           ))}
@@ -57,6 +65,7 @@ const Calendar = () => {
           currentYear={currentYear}
           setCurrentYear={setCurrentYear}
           setCurrentDate={setCurrentDate}
+          addEvent={addEvent}
         />
       </div>
       <p>{currentDate.toDateString()}</p>

@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import moment from 'moment';
@@ -9,8 +9,8 @@ import userService from './services/userService';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
+import Navbar from './components/Navbar/Navbar';
 import './App.css';
-import Calendar from './components/Calendar/Calendar';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<UserType | null>(null);
@@ -53,6 +53,7 @@ function App() {
     password: string,
     confirmation: string
   ) => {
+    console.log('handleRegister');
     if (username === '' || password === '' || confirmation === '') {
       toast.error('All fields are required');
       return;
@@ -68,6 +69,7 @@ function App() {
       password
     );
 
+    console.log('result:', result);
     if (result) {
       const { success, message } = result;
       if (success) {
@@ -162,9 +164,7 @@ function App() {
     }
   };
 
-  const handleLogOut = (e: SyntheticEvent) => {
-    e.preventDefault();
-    console.log('handleLogout e:', e);
+  const handleLogOut = () => {
     localStorage.removeItem('token');
     setLoggedInUser(null);
     navigate('/login');
@@ -173,6 +173,7 @@ function App() {
 
   return (
     <div id="main-container">
+      <Navbar loggedInUser={loggedInUser} handleLogOut={handleLogOut} />
       <Routes>
         <Route
           path="/"
@@ -194,7 +195,6 @@ function App() {
           path="/login"
           element={<LoginPage handleLogin={handleLogin} />}
         />
-        <Route path="/calendar" element={<Calendar />} />
       </Routes>
       <ToastContainer theme="colored" newestOnTop />
     </div>

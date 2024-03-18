@@ -45,7 +45,6 @@ const RegisterPage = ({ handleRegister }: RegisterPageProps) => {
 
   return (
     <div className="page register-page">
-      <h2>Register</h2>
       <AuthForm
         formType="register"
         fields={fields}

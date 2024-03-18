@@ -1,15 +1,68 @@
-@import url('/src/styles/pages.css');
-@import url('/src/styles/forms.css');
-@import url('/src/styles/calendar.css');
-#root,
-#main-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
+@import url('/src/styles/index.css');
+
+:root {
+  --dark-bg-1: #2f3e46;
+  --dark-bg-2: #354f52;
+  --lighter-green: #84a98c;
+  --darker-green: #52796f;
+  --off-white: #cad2c5;
+  --navbar-height: 10vh;
+  --main-height: 90%;
+  --min-main-height: 90vh;
 }
 
 #main-container {
-  align-items: center;
+  background-color: var(--off-white);
+  display: grid;
+  grid-template-rows: var(--navbar-height) var(--min-main-height);
+  height: 100%;
+  padding: 0;
+}
+
+.text-center {
   text-align: center;
+}
+
+a {
+  color: var(--off-white);
+  height: fit-content;
+  text-decoration: none;
+}
+
+a:hover {
+  transform: scale(1.2);
+}
+
+.form-link {
+  color: var(--darker-green);
+}
+
+ul,
+li {
+  list-style-type: none;
+}
+
+input {
+  padding: 5px 10px !important;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 5px 10px !important;
+  width: fit-content;
+}
+
+.btn {
+  background-color: var(--lighter-green);
+  border: 1px solid;
+  color: var(--off-white);
+}
+
+.btn:hover {
+  background-color: var(--off-white);
+  color: var(--lighter-green);
+  transform: scale(1.2);
 }

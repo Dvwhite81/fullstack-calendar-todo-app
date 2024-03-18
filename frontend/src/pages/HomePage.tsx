@@ -1,7 +1,6 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect } from 'react';
 
 import { EventType, UserType } from '../utils/types';
-import AddEventForm from '../components/Forms/AddEventForm';
 import { useNavigate } from 'react-router-dom';
 import Calendar from '../components/Calendar/Calendar';
 
@@ -18,12 +17,10 @@ interface HomePageProps {
   handleLogOut: (e: SyntheticEvent) => void;
 }
 
-const HomePage = ({ loggedInUser, addEvent, handleLogOut }: HomePageProps) => {
+const HomePage = ({ loggedInUser, addEvent }: HomePageProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('useEffect loggedInUser:', loggedInUser);
-
     if (!loggedInUser) {
       navigate('/login');
     }
@@ -31,14 +28,7 @@ const HomePage = ({ loggedInUser, addEvent, handleLogOut }: HomePageProps) => {
 
   return (
     <div className="page home-page">
-      <h2>Logged In User: {loggedInUser?.username}</h2>
-      <button type="button" onClick={handleLogOut}>
-        Log Out
-      </button>
-
-      <Calendar />
-
-      <AddEventForm addEvent={addEvent} />
+      <Calendar addEvent={addEvent} />
     </div>
   );
 };

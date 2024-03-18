@@ -10,9 +10,10 @@ interface AddEventFormProps {
     start: string,
     end: string
   ) => void;
+  hideForm: () => void;
 }
 
-const AddEventForm = ({ addEvent }: AddEventFormProps) => {
+const AddEventForm = ({ addEvent, hideForm }: AddEventFormProps) => {
   const [description, setDescription] = useState('');
   const [allDay, setAllDay] = useState(false);
   const [start, setStart] = useState(moment().format('yyyy-MM-DD'));
@@ -27,6 +28,9 @@ const AddEventForm = ({ addEvent }: AddEventFormProps) => {
   };
   return (
     <form className="form event-form" onSubmit={handleAddEvent}>
+      <button className="btn close-btn" type="button" onClick={hideForm}>
+        x
+      </button>
       <FormInput
         field={{
           name: 'event-description-input',
@@ -62,7 +66,9 @@ const AddEventForm = ({ addEvent }: AddEventFormProps) => {
           setValue: setEnd,
         }}
       />
-      <button type="submit">Add Event</button>
+      <button className="btn submit-btn" type="submit">
+        Add Event
+      </button>
     </form>
   );
 };

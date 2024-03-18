@@ -10,6 +10,15 @@ registerRouter.post('/', async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    return res.send({
+      status: 400,
+      success: false,
+      message: 'Username already exists',
+    });
+  }
+
   try {
     const user = new User({
       username,

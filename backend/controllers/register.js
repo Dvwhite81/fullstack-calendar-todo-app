@@ -20,6 +20,14 @@ const registerRouter = (0, express_1.Router)();
 registerRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     const passwordHash = yield bcryptjs_1.default.hash(password, 10);
+    const existingUser = yield user_1.default.findOne({ username });
+    if (existingUser) {
+        return res.send({
+            status: 400,
+            success: false,
+            message: 'Username already exists',
+        });
+    }
     try {
         const user = new user_1.default({
             username,

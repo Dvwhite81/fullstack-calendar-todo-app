@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { getCurrentDays } from '../../utils/helpers';
+import AddEventForm from '../Forms/AddEventForm';
 
 interface CalendarDaysProps {
   currentDay: number;
@@ -8,6 +10,12 @@ interface CalendarDaysProps {
   currentYear: number;
   setCurrentYear: (year: number) => void;
   setCurrentDate: (date: Date) => void;
+  addEvent: (
+    description: string,
+    allDay: boolean,
+    start: string,
+    end: string
+  ) => void;
 }
 
 const CalendarDays = ({
@@ -18,7 +26,10 @@ const CalendarDays = ({
   currentYear,
   setCurrentYear,
   setCurrentDate,
+  addEvent,
 }: CalendarDaysProps) => {
+  const [showForm, setShowForm] = useState(false);
+
   const firstDay = new Date(currentYear, currentMonth, 1);
   const weekdayOfFirstDay = firstDay.getDay();
   const currentDays = getCurrentDays(
@@ -39,12 +50,18 @@ const CalendarDays = ({
   const handleDayClick = (year: number, month: number, day: number) => {
     setDay(year, month, day);
     // Open Modal
+    setShowForm(true);
   };
+
+  const hideForm = () => setShowForm(false);
 
   return (
     <div className="table-content">
+      {showForm && <AddEventForm addEvent={addEvent} hideForm={hideForm} />}
+
       {currentDays.map((d) => (
         <div
+          key={d.date.toDateString()}
           className={
             'calendar-day' +
             (d.currentMonth ? ' current' : '') +
